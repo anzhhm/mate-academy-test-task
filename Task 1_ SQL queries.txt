@@ -1,0 +1,42 @@
+﻿1.1. The number of created leads per week grouped by course type
+
+
+SELECT 
+    c.type, 
+    DATE_TRUNC('week', l.created_at) AS week_start, 
+    COUNT(l.id) AS created_leads_per_week
+FROM courses c
+JOIN leads l ON l.course_id = c.id
+GROUP BY c.type, week_start
+ORDER BY week_start, c.type;
+
+
+
+1.2. The number of WON flex leads per country created from 01.01.2024
+
+
+SELECT 
+    d.country_name, 
+    COUNT(d.id) AS won_flex_leads
+FROM domains d
+JOIN users u ON u.domain_id = d.id
+JOIN leads l ON l.user_id = u.id
+JOIN courses c ON c.id = l.course_id
+WHERE d.status = 'WON'
+  AND c.type = 'FLEX'
+  AND l.created_at >= '2024-01-01'
+GROUP BY d.country_name
+ORDER BY d.country_name;
+
+
+
+1.3. User email, lead id and lost reason for users who have lost flex leads from 01.07.2024
+
+SELECT u.email, l.id AS lead_id, l.lost_reason
+FROM users u
+JOIN leads l ON l.user_id = u.id
+JOIN courses c ON c.id = l.course_id
+WHERE l.updated_at >= '2024-01-07'
+AND c.type = 'FLEX'
+AND l.status = 'LOST'
+ORDER BY l.updated_at;
